@@ -67,7 +67,7 @@ Andrea Lusuardi - uovobw@gmail.com
 5. Copyright
 ------------
 
-Copyright 2014 Andrea Lusuardi, Daniele Torelli
+Copyright 2014 Andrea Lusuardi, Daniele Torelli. 
 The program is distributed under the terms of the GNU General Public License
 (see LICENSE.txt).
 
