@@ -7,6 +7,7 @@ JACK (Jack Audio Connection Kit) over IP, using UDPLite.
 jack\_trauma is lightweight and mainly oriented towards low latency, as it 
 doesn't perform any buffering.
 
+
 1. Requirements
 ---------------
 
@@ -34,13 +35,22 @@ doesn't perform any buffering.
 
 *Example*:
 
-To do a local test, once you have a running JACK server run:
+To do a local test on 8 channels, once you have a running JACK server run:
 
-./jack\_trauma -s -c 8 -a 127.0.0.1 -p 8000
+./jack\_trauma -s -c 8
 
 On another terminal, run:
 
-./jack\_trauma -c 8 -a 127.0.0.1 -p 8000
+./jack\_trauma -c N
+
+To send 16 audio channels to host 192.168.1.23, make sure that the JACK
+server is running on both hosts with the same period size, and run:
+
+./jack\_trauma -s -c 16 -a 192.168.1.23 -p PORT
+
+On the receiver host, run:
+
+./jack\_trauma -c 16 -p PORT
 
 If the JACK server is not running, jack\_trauma will attempt to launch one
 based on your ~/.jackdrc configuration file.

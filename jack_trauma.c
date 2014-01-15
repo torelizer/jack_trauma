@@ -20,7 +20,7 @@
 #define SOL_UDPLITE  136
 #define IP_DONTFRAG 1
 
-char *remote_address;
+char *remote_address = "127.0.0.1";
 int remote_port = 12345;
 int socketfd;
 int addr_size = sizeof(struct sockaddr_in);
