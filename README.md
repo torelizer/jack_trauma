@@ -50,6 +50,7 @@ based on your ~/.jackdrc configuration file.
 ----------
 
 Daniele Torelli - http://www.danieletorelli.net
+
 Andrea Lusuardi - uovobw@gmail.com 
 
 
