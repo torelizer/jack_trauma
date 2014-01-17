@@ -125,8 +125,6 @@ int process_init(){
     for(i=0; i<n_packets; i++){
         packets[i] = calloc((bufsize + 1), sizeof(jack_default_audio_sample_t));
         packets[i][0] = (jack_default_audio_sample_t)(i + channels_offset);
-		j = (int)(packets[i][0]);
-		printf("packet %d ready\n", j);
     }
 
     jack_on_shutdown(client, jack_shutdown, 0);
