@@ -1,6 +1,6 @@
 CC=gcc
 
-LD_OPTS=-ljack -lzmq -lpthread 
+LD_OPTS=-ljack 
 
 CC_OPTS=-O3 -Wall
 
