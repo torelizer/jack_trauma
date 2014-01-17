@@ -83,16 +83,20 @@ int process_server(jack_nframes_t nframes, void *arg){
 
 int process_client(jack_nframes_t nframes, void *arg){
     
-	int i;
+	int i, r;
     int packet_ind;
     unsigned int addr_size = sizeof(struct sockaddr_in);
     jack_default_audio_sample_t *tmp;
 
     for(i=0;i<n_packets;i++){
         memset(packets[i]+1, 0, bufsize*sizeof(jack_default_audio_sample_t));
-        recvfrom(socketfd, (void*)packets[i], udp_payload_bytes, 0, (struct sockaddr*)&Remote[i], &addr_size);
-        packet_ind = (int)packets[i][0] % n_channels;
-        tmp = jack_port_get_buffer(jack_ports[packet_ind], nframes);	
+        r = recvfrom(socketfd, (void*)packets[i], udp_payload_bytes, 0, (struct sockaddr*)&Remote[i], &addr_size); 
+		printf("%d\n", r);
+		if(r<0){
+			break;
+		}
+	    packet_ind = (int)packets[i][0] % n_channels;
+    	tmp = jack_port_get_buffer(jack_ports[packet_ind], nframes);
         memcpy(tmp, packets[i]+1, nframes*sizeof(jack_default_audio_sample_t));
     }
 
