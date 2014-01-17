@@ -65,7 +65,7 @@ void jack_error_handler(const char *arg){
 // - - - - - - - - - - -
 int process_server(jack_nframes_t nframes, void *arg){
 
-	int i;
+    int i;
     jack_default_audio_sample_t *tmp;
 
     for(i=0;i<n_channels;i++){
@@ -83,19 +83,19 @@ int process_server(jack_nframes_t nframes, void *arg){
 
 int process_client(jack_nframes_t nframes, void *arg){
 
-	int i, r;
+    int i, r;
     int packet_ind;
     unsigned int addr_size = sizeof(struct sockaddr_in);
     jack_default_audio_sample_t *tmp;
 
     for(i=0;i<n_packets;i++){
-        memset(packets[i]+1, 0, bufsize*sizeof(jack_default_audio_sample_t));
-        r = recvfrom(socketfd, (void*)packets[i], udp_payload_bytes, 0, (struct sockaddr*)&Remote[i], &addr_size);
-		if(r > 0){
-	    	packet_ind = (int)packets[i][0] % n_channels;
-    		tmp = jack_port_get_buffer(jack_ports[packet_ind], nframes);
-        	memcpy(tmp, packets[i]+1, nframes*sizeof(jack_default_audio_sample_t));
-		}
+        if (recvfrom(socketfd, (void*)packets[i], udp_payload_bytes, MSG_PEEK, (struct sockaddr*)&Remote[i], &addr_size) > 0 ) {
+            memset(packets[i]+1, 0, bufsize*sizeof(jack_default_audio_sample_t));
+            r = recvfrom(socketfd, (void*)packets[i], udp_payload_bytes, 0, (struct sockaddr*)&Remote[i], &addr_size);
+            packet_ind = (int)packets[i][0] % n_channels;
+            tmp = jack_port_get_buffer(jack_ports[packet_ind], nframes);
+            memcpy(tmp, packets[i]+1, nframes*sizeof(jack_default_audio_sample_t));
+        }
     }
 
     return 0;
@@ -106,7 +106,7 @@ int process_client(jack_nframes_t nframes, void *arg){
 
 // endless loop, all ok
 int roll(){
-	while(jack_active){
+    while(jack_active){
         sleep(1);
     }
     return 1;
@@ -308,14 +308,14 @@ int cleanall(){
 // parse CLI options - - - - - - - - - - - - - - - - - - - - - - -
 
 int print_help_and_quit(){
-	printf("\nUsage: jacknet2 [OPTIONS]\n\n");
-	printf("-s\t\t run in send mode\n");
-	printf("-c CHANNELS\t number of input channels (default=4)\n");
-	printf("-a ADDR\t\t set remote address (default=localhost)\n");
-	printf("-o OFFSET\t set offset for channels numbers\n");
-	printf("-p PORT\t\t set UDP Lite port in use (default=12345)\n");
-	printf("\n");
-	exit(0);
+    printf("\nUsage: jacknet2 [OPTIONS]\n\n");
+    printf("-s\t\t run in send mode\n");
+    printf("-c CHANNELS\t number of input channels (default=4)\n");
+    printf("-a ADDR\t\t set remote address (default=localhost)\n");
+    printf("-o OFFSET\t set offset for channels numbers\n");
+    printf("-p PORT\t\t set UDP Lite port in use (default=12345)\n");
+    printf("\n");
+    exit(0);
 }
 
 parse_options(int argc, char** argv){
@@ -335,27 +335,27 @@ parse_options(int argc, char** argv){
                 n_channels = atoi(optarg);
                 break;
             case 'a':
-				if(amiserver){
-	                remote_address = optarg;
-				}
+                if(amiserver){
+                    remote_address = optarg;
+                }
             case 'p':
-				if(amiserver){
-	                remote_port = atoi(optarg);
-				}
+                if(amiserver){
+                    remote_port = atoi(optarg);
+                }
                 break;
-			case 'o':
-				if(amiserver){
-					channels_offset = atoi(optarg);
-				}
-				break;
+            case 'o':
+                if(amiserver){
+                    channels_offset = atoi(optarg);
+                }
+                break;
             case 'h':
-				print_help_and_quit();
+                print_help_and_quit();
                 break;
             case ':':
-				print_help_and_quit();
+                print_help_and_quit();
                 break;
             case '?':
-				print_help_and_quit();
+                print_help_and_quit();
                 break;
 
         }
