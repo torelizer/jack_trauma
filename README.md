@@ -31,6 +31,7 @@ doesn't perform any buffering.
 * -c [channels]: number of audio channels
 * -a [address]: destination address for audio channels
 * -p [port]: UDPLite port in use
+* -o [offset]: offset to be applied to outgoing channel numbers
 * -h: display help message
 
 *Example*:
