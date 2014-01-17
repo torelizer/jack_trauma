@@ -60,7 +60,7 @@ void jack_error_handler(const char *arg){
     }
 }
 
-// - - - - - - - - - - - 
+// - - - - - - - - - - -
 // process() for sender
 // - - - - - - - - - - -
 int process_server(jack_nframes_t nframes, void *arg){
@@ -82,7 +82,7 @@ int process_server(jack_nframes_t nframes, void *arg){
 // - - - - - - - - - - - -
 
 int process_client(jack_nframes_t nframes, void *arg){
-    
+
 	int i, r;
     int packet_ind;
     unsigned int addr_size = sizeof(struct sockaddr_in);
@@ -90,9 +90,9 @@ int process_client(jack_nframes_t nframes, void *arg){
 
     for(i=0;i<n_packets;i++){
         memset(packets[i]+1, 0, bufsize*sizeof(jack_default_audio_sample_t));
-        r = recvfrom(socketfd, (void*)packets[i], udp_payload_bytes, 0, (struct sockaddr*)&Remote[i], &addr_size); 
+        r = recvfrom(socketfd, (void*)packets[i], udp_payload_bytes, 0, (struct sockaddr*)&Remote[i], &addr_size);
 		printf("%d\n", r);
-		if(r<0){
+		if(r < 0 && (errno != EINTR && errno != EAGAIN)){
 			break;
 		}
 	    packet_ind = (int)packets[i][0] % n_channels;
