@@ -39,6 +39,7 @@ const char *default_out_port_basename = "out";
 const char *default_client_name = "jack_trauma";
 const char *default_server_name = "jack_srv";
 short n_channels = 4;
+short channels_offset = 0;
 jack_port_t **jack_ports;
 jack_client_t *client;
 jack_options_t options = JackNullOption;
@@ -116,14 +117,16 @@ int roll(){
 // and JACK client enabling
 int process_init(){
 
-    int i;
+    int i,j;
 
     n_packets = n_channels;
 
     packets = malloc((n_packets)*sizeof(jack_default_audio_sample_t*));
     for(i=0; i<n_packets; i++){
         packets[i] = calloc((bufsize + 1), sizeof(jack_default_audio_sample_t));
-        packets[i][0] = (jack_default_audio_sample_t)i;
+        packets[i][0] = (jack_default_audio_sample_t)(i + channels_offset);
+		j = (int)(packets[i][0]);
+		printf("packet %d ready\n", j);
     }
 
     jack_on_shutdown(client, jack_shutdown, 0);
@@ -309,16 +312,17 @@ int print_help_and_quit(){
 	printf("-s\t\t run in send mode\n");
 	printf("-c CHANNELS\t number of input channels (default=4)\n");
 	printf("-a ADDR\t\t set remote address (default=localhost)\n");
+	printf("-o OFFSET\t set offset for channels numbers\n");
 	printf("-p PORT\t\t set UDP Lite port in use (default=12345)\n");
 	printf("\n");
 	exit(0);
 }
 
-int parse_options(int argc, char** argv){
+parse_options(int argc, char** argv){
 
     int opt;
     extern char *optarg;
-    const char* optstring = "sc:a:p:h";
+    const char* optstring = "sc:a:p:o:h";
 
     while((opt = getopt(argc, argv, optstring)) != -1){
 
@@ -331,10 +335,19 @@ int parse_options(int argc, char** argv){
                 n_channels = atoi(optarg);
                 break;
             case 'a':
-                remote_address = optarg;
+				if(amiserver){
+	                remote_address = optarg;
+				}
             case 'p':
-                remote_port = atoi(optarg);
+				if(amiserver){
+	                remote_port = atoi(optarg);
+				}
                 break;
+			case 'o':
+				if(amiserver){
+					channels_offset = atoi(optarg);
+				}
+				break;
             case 'h':
 				print_help_and_quit();
                 break;
