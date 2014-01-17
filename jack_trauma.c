@@ -91,13 +91,11 @@ int process_client(jack_nframes_t nframes, void *arg){
     for(i=0;i<n_packets;i++){
         memset(packets[i]+1, 0, bufsize*sizeof(jack_default_audio_sample_t));
         r = recvfrom(socketfd, (void*)packets[i], udp_payload_bytes, 0, (struct sockaddr*)&Remote[i], &addr_size);
-		printf("%d\n", r);
-		if(r < 0 && (errno != EINTR && errno != EAGAIN)){
-			break;
+		if(r > 0){
+	    	packet_ind = (int)packets[i][0] % n_channels;
+    		tmp = jack_port_get_buffer(jack_ports[packet_ind], nframes);
+        	memcpy(tmp, packets[i]+1, nframes*sizeof(jack_default_audio_sample_t));
 		}
-	    packet_ind = (int)packets[i][0] % n_channels;
-    	tmp = jack_port_get_buffer(jack_ports[packet_ind], nframes);
-        memcpy(tmp, packets[i]+1, nframes*sizeof(jack_default_audio_sample_t));
     }
 
     return 0;
