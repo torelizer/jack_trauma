@@ -88,14 +88,19 @@ int process_client(jack_nframes_t nframes, void *arg){
     unsigned int addr_size = sizeof(struct sockaddr_in);
     jack_default_audio_sample_t *tmp;
 
-    for(i=0;i<n_packets;i++){
-        if (recvfrom(socketfd, (void*)packets[i], udp_payload_bytes, MSG_PEEK, (struct sockaddr*)&Remote[i], &addr_size) > 0 ) {
-            memset(packets[i]+1, 0, bufsize*sizeof(jack_default_audio_sample_t));
-            r = recvfrom(socketfd, (void*)packets[i], udp_payload_bytes, 0, (struct sockaddr*)&Remote[i], &addr_size);
-            packet_ind = (int)packets[i][0] % n_channels;
-            tmp = jack_port_get_buffer(jack_ports[packet_ind], nframes);
-            memcpy(tmp, packets[i]+1, nframes*sizeof(jack_default_audio_sample_t));
-        }
+    for(i=0;i<n_channels;i++){
+        r = recvfrom(socketfd, (void*)packets[i], udp_payload_bytes, MSG_PEEK, (struct sockaddr*)&Remote[i], &addr_size);
+		if (r<0){
+			printf("%d\n",r);
+			break;
+		}
+		printf("%d\n",r);
+        memset(packets[i]+1, 0, bufsize*sizeof(jack_default_audio_sample_t));
+        r = recvfrom(socketfd, (void*)packets[i], udp_payload_bytes, 0, (struct sockaddr*)&Remote[i], &addr_size);
+        packet_ind = (int)packets[i][0] % n_channels;
+        tmp = jack_port_get_buffer(jack_ports[packet_ind], nframes);
+        memcpy(tmp, packets[i]+1, nframes*sizeof(jack_default_audio_sample_t));
+        
     }
 
     return 0;
