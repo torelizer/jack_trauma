@@ -349,9 +349,7 @@ parse_options(int argc, char** argv){
                     remote_address = optarg;
                 }
             case 'p':
-                if(amiserver){
-                    remote_port = atoi(optarg);
-                }
+                remote_port = atoi(optarg);
                 break;
             case 'o':
                 if(amiserver){
