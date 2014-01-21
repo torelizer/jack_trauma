@@ -40,6 +40,8 @@ const char *default_client_name = "jack_trauma";
 const char *default_server_name = "jack_srv";
 short n_channels = 4;
 short channels_offset = 0;
+short *received;
+jack_default_audio_sample_t *silence;
 short current_channels = 0;
 jack_port_t **jack_ports;
 jack_client_t *client;
@@ -90,6 +92,8 @@ int process_client(jack_nframes_t nframes, void *arg){
     unsigned int addr_size = sizeof(struct sockaddr_in);
     jack_default_audio_sample_t *tmp;
 
+	memset(received, 0, n_channels*sizeof(short));
+
 	do {
        	r = recvfrom(socketfd, (void*)packets[i], udp_payload_bytes, MSG_PEEK, (struct sockaddr*)&Remote[i], &addr_size); 
 		if (r>0){
@@ -97,6 +101,7 @@ int process_client(jack_nframes_t nframes, void *arg){
        		memset(packets[i]+1, 0, bufsize*sizeof(jack_default_audio_sample_t));
        		r = recvfrom(socketfd, (void*)packets[i], udp_payload_bytes, 0, (struct sockaddr*)&Remote[i], &addr_size);
        		packet_ind = (int)packets[i][0] % n_channels;
+			received[packet_ind] = 1;
        		tmp = jack_port_get_buffer(jack_ports[packet_ind], nframes);
        		memcpy(tmp, packets[i]+1, nframes*sizeof(jack_default_audio_sample_t));
        	}
@@ -107,6 +112,14 @@ int process_client(jack_nframes_t nframes, void *arg){
 		}
 		i++;
     } while(i < current_channels);
+
+	for(i=0; i<n_channels; i++){
+		if(!received[i]){
+       		tmp = jack_port_get_buffer(jack_ports[i], nframes);
+       		memcpy(tmp, silence, nframes*sizeof(jack_default_audio_sample_t));
+			
+		}
+	}
 
     return 0;
 }
@@ -138,6 +151,9 @@ int process_init(){
         packets[i] = calloc((bufsize + 1), sizeof(jack_default_audio_sample_t));
         packets[i][0] = (jack_default_audio_sample_t)(i + channels_offset);
     }
+	
+	received = calloc(n_channels, sizeof(short));
+	silence = calloc(bufsize, sizeof(jack_default_audio_sample_t));
 
     jack_on_shutdown(client, jack_shutdown, 0);
     jack_set_error_function(jack_error_handler);
