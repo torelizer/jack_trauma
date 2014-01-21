@@ -142,7 +142,7 @@ int roll(){
 // and JACK client enabling
 int process_init(){
 
-    int i,j;
+    int i;
 
     n_packets = n_channels;
 
@@ -151,9 +151,6 @@ int process_init(){
         packets[i] = calloc((bufsize + 1), sizeof(jack_default_audio_sample_t));
         packets[i][0] = (jack_default_audio_sample_t)(i + channels_offset);
     }
-	
-	received = calloc(n_channels, sizeof(short));
-	silence = calloc(bufsize, sizeof(jack_default_audio_sample_t));
 
     jack_on_shutdown(client, jack_shutdown, 0);
     jack_set_error_function(jack_error_handler);
@@ -162,6 +159,8 @@ int process_init(){
         jack_set_process_callback(client, process_server, Remote);
     }
     else{
+		received = calloc(n_channels, sizeof(short));
+		silence = calloc(bufsize, sizeof(jack_default_audio_sample_t));
         jack_set_process_callback(client, process_client, 0);
     }
 
@@ -326,6 +325,8 @@ int cleanall(){
 
     free(jack_ports);
     free(packets);
+	free(received);
+	free(silence);
 
     return 0;
 }
