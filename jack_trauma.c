@@ -36,7 +36,7 @@ int current_stage = 0;
 
 const char *default_in_port_basename = "in";
 const char *default_out_port_basename = "out";
-const char *default_client_name = "jack_trauma";
+char *default_client_name = "jack_trauma";
 const char *default_server_name = "jack_srv";
 short n_channels = 4;
 short channels_offset = 0;
@@ -341,6 +341,7 @@ int print_help_and_quit(){
     printf("-a ADDR\t\t set remote address (default=localhost)\n");
     printf("-o OFFSET\t set offset for channels numbers\n");
     printf("-p PORT\t\t set UDP Lite port in use (default=12345)\n");
+	printf("-n NAME\t\t set JACK client name\n");
     printf("\n");
     exit(0);
 }
@@ -349,7 +350,7 @@ parse_options(int argc, char** argv){
 
     int opt;
     extern char *optarg;
-    const char* optstring = "sc:a:p:o:h";
+    const char* optstring = "sc:a:o:p:n:h";
 
     while((opt = getopt(argc, argv, optstring)) != -1){
 
@@ -368,6 +369,9 @@ parse_options(int argc, char** argv){
             case 'p':
                 remote_port = atoi(optarg);
                 break;
+			case 'n':
+				default_client_name = optarg;
+				break;
             case 'o':
                 if(amiserver){
                     channels_offset = atoi(optarg);

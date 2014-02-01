@@ -30,8 +30,9 @@ doesn't perform any buffering.
 * -s: run in send mode (will run in receive mode otherwise)
 * -c [channels]: number of audio channels
 * -a [address]: destination address for audio channels
-* -p [port]: UDPLite port in use
 * -o [offset]: offset to be applied to outgoing channel numbers
+* -p [port]: UDPLite port in use
+* -n [name]: JACK client name
 * -h: display help message
 
 *Example*:
