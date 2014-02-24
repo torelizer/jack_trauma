@@ -348,7 +348,7 @@ int print_help_and_quit(){
     exit(0);
 }
 
-parse_options(int argc, char** argv){
+int parse_options(int argc, char** argv){
 
     int opt;
     extern char *optarg;
