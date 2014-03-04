@@ -336,16 +336,16 @@ int cleanall(){
 
 // parse CLI options - - - - - - - - - - - - - - - - - - - - - - -
 
-int print_help_and_quit(){
-    printf("\nUsage: jack-trauma [OPTIONS]\n\n");
-    printf("-s\t\t run in send mode\n");
-    printf("-c CHANNELS\t number of input channels (default=4)\n");
-    printf("-a ADDR\t\t set remote address (default=localhost)\n");
-    printf("-o OFFSET\t set offset for channels numbers\n");
-    printf("-p PORT\t\t set UDP Lite port in use (default=12345)\n");
-	printf("-n NAME\t\t set JACK client name\n");
-    printf("\n");
-    exit(0);
+int print_help_and_quit(char* name){
+    fprintf(stderr, "\nUsage: %s [OPTIONS]\n\n", name);
+    fprintf(stderr, "-s\t\t run in send mode\n");
+    fprintf(stderr, "-c CHANNELS\t number of input channels (default=4)\n");
+    fprintf(stderr, "-a ADDR\t\t set remote address (default=localhost)\n");
+    fprintf(stderr, "-o OFFSET\t set offset for channels numbers\n");
+    fprintf(stderr, "-p PORT\t\t set UDP Lite port in use (default=12345)\n");
+	fprintf(stderr, "-n NAME\t\t set JACK client name\n");
+    fprintf(stderr, "\n");
+    exit(1);
 }
 
 int parse_options(int argc, char** argv){
@@ -380,13 +380,13 @@ int parse_options(int argc, char** argv){
                 }
                 break;
             case 'h':
-                print_help_and_quit();
+                print_help_and_quit(argv[0]);
                 break;
             case ':':
-                print_help_and_quit();
+                print_help_and_quit(argv[0]);
                 break;
             case '?':
-                print_help_and_quit();
+                print_help_and_quit(argv[0]);
                 break;
 
         }
