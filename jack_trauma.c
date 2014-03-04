@@ -337,7 +337,7 @@ int cleanall(){
 // parse CLI options - - - - - - - - - - - - - - - - - - - - - - -
 
 int print_help_and_quit(){
-    printf("\nUsage: jacknet2 [OPTIONS]\n\n");
+    printf("\nUsage: jack-trauma [OPTIONS]\n\n");
     printf("-s\t\t run in send mode\n");
     printf("-c CHANNELS\t number of input channels (default=4)\n");
     printf("-a ADDR\t\t set remote address (default=localhost)\n");
