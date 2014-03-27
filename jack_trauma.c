@@ -14,11 +14,25 @@
 
 #include <jack/jack.h>
 
-#define SOCKET_ERROR   ((int)-1)
-#define UDPLITE_SEND_CSCOV  10
-#define UDPLITE_RECV_CSCOV  11
-#define SOL_UDPLITE  136
-#define IP_DONTFRAG 1
+#ifndef SOCKET_ERROR
+	#define SOCKET_ERROR   ((int)-1)
+#endif
+
+#ifndef UDPLITE_SEND_CSCOV
+	#define UDPLITE_SEND_CSCOV  10
+#endif
+
+#ifndef UDPLITE_RECV_CSCOV
+	#define UDPLITE_RECV_CSCOV  11
+#endif
+
+#ifndef SOL_UDPLITE
+	#define SOL_UDPLITE  136
+#endif
+
+#ifndef IP_DONTFRAG
+	#define IP_DONTFRAG 1
+#endif
 
 char *remote_address = "127.0.0.1";
 int remote_port = 12345;
@@ -52,12 +66,12 @@ int jack_active = 0;
 
 
 void jack_shutdown (void *arg){
-    printf("Kicked out by JACK server\n");
+    fprintf(stderr, "Kicked out by JACK server\n");
 }
 
 void jack_error_handler(const char *arg){
     if(jack_active){
-        printf("JACK died\n");
+        fprintf(stderr, "JACK died\n");
         jack_active = 0;
         current_stage = 0;
     }
@@ -189,38 +203,38 @@ int udp_init(){
 
     socketfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDPLITE);
     if (socketfd == SOCKET_ERROR) {
-        printf ("socket() failed, Err: %d \"%s\"\n", errno,strerror(errno));
+        fprintf (stderr, "socket() failed, Err: %d \"%s\"\n", errno,strerror(errno));
         exit(1);
     }
 
     int tos = 0x10;
     if (setsockopt(socketfd, IPPROTO_IP, IP_TOS, &tos, sizeof(tos))) {
-        printf ("setting tos failed, Err: %d \"%s\"\n", errno,strerror(errno));
+        fprintf (stderr, "setting tos failed, Err: %d \"%s\"\n", errno,strerror(errno));
         exit(1);
     }
 
     int reuseaddr = 1;
     if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &reuseaddr, sizeof(reuseaddr))) {
-        printf ("setting reuseaddr failed, Err: %d \"%s\"\n", errno,strerror(errno));
+        fprintf (stderr, "setting reuseaddr failed, Err: %d \"%s\"\n", errno,strerror(errno));
         exit(1);
     }
 
     int coverage = 12;
     if (amiserver) {
         if (setsockopt(socketfd, SOL_UDPLITE, UDPLITE_SEND_CSCOV, &coverage, sizeof(int))) {
-            printf ("setting udplite SENDER coverage to %d failed, Err: %d \"%s\"\n", coverage, errno,strerror(errno));
+            fprintf (stderr, "setting udplite SENDER coverage to %d failed, Err: %d \"%s\"\n", coverage, errno,strerror(errno));
             exit(1);
         }
     } else {
         if (setsockopt(socketfd, SOL_UDPLITE, UDPLITE_RECV_CSCOV, &coverage, sizeof(int))) {
-            printf ("setting udplite RECEIVER coverage to %d failed, Err: %d \"%s\"\n", coverage, errno,strerror(errno));
+            fprintf (stderr, "setting udplite RECEIVER coverage to %d failed, Err: %d \"%s\"\n", coverage, errno,strerror(errno));
             exit(1);
         }
     }
 
     int nofrag = 1;
     if (setsockopt(socketfd, IPPROTO_IP, IP_DONTFRAG, &nofrag, sizeof(nofrag))) {
-            printf ("setting nofrag option failed, Err: \"%d\" %s \n", errno,strerror(errno));
+            fprintf (stderr, "setting nofrag option failed, Err: \"%d\" %s \n", errno,strerror(errno));
             exit(1);
     }
 
@@ -246,7 +260,7 @@ int udp_init(){
 
     ris = bind(socketfd, (struct sockaddr*) &Local, sizeof(Local));
     if (ris == SOCKET_ERROR)  {
-        printf ("bind() failed, Err: %d \"%s\"\n",errno,strerror(errno));
+        fprintf (stderr, "bind() failed, Err: %d \"%s\"\n",errno,strerror(errno));
         exit(1);
     }
 
@@ -322,7 +336,7 @@ int cleanall(){
     if(client){
         jack_deactivate(client);
         jack_client_close(client);
-        printf("JACK client closed\n");
+        fprintf(stderr, "JACK client closed\n");
     }
 
     free(jack_ports);
